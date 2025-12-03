@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tafelbilder: Informatik Klasse 9 (Sachsen)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+        
+        .slide-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+        
+        .slide {
+            display: none;
+            /* Wird per JS gesteuert */
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            min-height: 550px;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .slide.active {
+            display: flex;
+        }
+        
+        .slide-header {
+            background-color: #004a99;
+            /* Sachsen Blau */
+            color: white;
+            padding: 24px 32px;
+        }
+        
+        .slide-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .slide-header p {
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin: 4px 0 0 0;
+        }
+        
+        .slide-content {
+            padding: 32px;
+            flex-grow: 1;
+            overflow-y: auto;
+            /* Stellt sicher, dass Inhalte scrollen, wenn sie zu lang sind */
+        }
+        
+        .slide-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .slide-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #004a99;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .slide-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .slide-content li {
+            margin-bottom: 8px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .slide-content code {
+            background-color: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .slide-content pre code {
+            display: block;
+            padding: 16px;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            background-color: #1e293b;
+            /* Dunklerer Hintergrund für Code */
+            color: #e2e8f0;
+            /* Hellerer Text */
+            border-radius: 8px;
+        }
+        
+        .slide-content .resource-link {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-top: 4px;
+            margin-right: 4px;
+        }
+        
+        .slide-content .resource-link:hover {
+            background-color: #c7d2fe;
+        }
+        
+        .slide-content .problem {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .slide-content .summary-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .slide-content .advanced-box {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .slide-content .python-box {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-left: 4px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 16px;
+        }
+        
+        .nav-button {
+            background-color: #004a99;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: #003366;
+        }
+        
+        .nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        #slide-counter {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        /* Style für Bilder */
+        
+        .slide-content img {
+            max-width: 80%;
+            height: auto;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="slide-container">
+
+        <!-- === STUNDE 2: RELATIONALES MODELL === -->
+        <!-- Slide 3.3 -->
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Wiederholung: ER-Modell</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <img src="images/er-modell.png" alt="er-modell-beispiel-1">
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Wiederholung: ER-Modell</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <img src="images/er-modell.png" alt="er-modell-beispiel-1">
+                <p>ERM = Eine grafische Methode, um Datenstrukturen zu planen (nach Chen).</p>
+
+                <h4>1. Entitätstyp (Rechteck)</h4>
+                <ul>
+                    <li>Eine Gruppe von "Dingen", über die wir Daten speichern.</li>
+                    <li>Bsp.: [Nutzer], [Video]</li>
+                </ul>
+
+                <h4>2. Attribut (Ellipse)</h4>
+                <ul>
+                    <li>Eine Eigenschaft des Entitätstyps.</li>
+                    <li>Bsp.: (E-Mail), (Views)</li>
+                </ul>
+
+                <h4>3. Beziehungstyp (Raute)</h4>
+                <ul>
+                    <li>Beschreibt die Verbindung zwischen zwei Entitätstypen.</li>
+                    <li>Bsp.: [Nutzer] --&lt;hat&gt;-- [Videos]</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Einstieg</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Einstieg 1: Wer ist das?</h3>
+                <img src="images/thomas-mueller.avif">
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Einstieg</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Einstieg 1: Und der hier?</h3>
+                <img src="images/thomas-mueller-2.png">
+            </div>
+        </div>
+
+        <!-- Slide 2.1 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Einstieg</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Einstieg 2: Was ist hier das Problem?</h3>
+                <img src="images/table1.png">
+
+                <h4>Beispiel: Tabelle "tiktok"</h4>
+                <table class="w-full text-left border border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border p-2">Geburtstag</th>
+                            <th class="border p-2">Telefon</th>
+                            <th class="border p-2">E-Mail</th>
+                            <th class="border p-2">Passwort</th>
+                            <th class="border p-2">Benutzername</th>
+                            <th class="border p-2">Werbung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2">20.02.2010</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test@test.de</td>
+                            <td class="border p-2">asdf</td>
+                            <td class="border p-2">Alex</td>
+                            <td class="border p-2">false</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">02.08.2009</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test2@test.de</td>
+                            <td class="border p-2">fasd</td>
+                            <td class="border p-2">yesyes</td>
+                            <td class="border p-2">true</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">20.02.2010</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test@test.de</td>
+                            <td class="border p-2">asdf</td>
+                            <td class="border p-2">Alex</td>
+                            <td class="border p-2">false</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 2.1 highlighted -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Einstieg</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Einstieg 2: Problem gefunden!</h3>
+                <img src="images/table1.png" alt="primary-foreign-key-relationship">
+
+                <h4>Beispiel: Tabelle "tiktok"</h4>
+                <table class="w-full text-left border border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border p-2">Geburtstag</th>
+                            <th class="border p-2">Telefon</th>
+                            <th class="border p-2">E-Mail</th>
+                            <th class="border p-2">Passwort</th>
+                            <th class="border p-2">Benutzername</th>
+                            <th class="border p-2">Werbung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-red-100">
+                            <td class="border p-2">20.02.2010</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test@test.de</td>
+                            <td class="border p-2">asdf</td>
+                            <td class="border p-2">Alex</td>
+                            <td class="border p-2">false</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2">02.08.2009</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test2@test.de</td>
+                            <td class="border p-2">fasd</td>
+                            <td class="border p-2">yesyes</td>
+                            <td class="border p-2">true</td>
+                        </tr>
+                        <tr class="bg-red-100">
+                            <td class="border p-2">20.02.2010</td>
+                            <td class="border p-2">0123456789</td>
+                            <td class="border p-2">test@test.de</td>
+                            <td class="border p-2">asdf</td>
+                            <td class="border p-2">Alex</td>
+                            <td class="border p-2">false</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 2.4 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Tafelbild (Schlüssel)</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Tafelbild: Schlüssel (Keys)</h3>
+                <img src="images/Foreign-keys.png" alt="primary-foreign-key-relationship">
+                <p>Schlüssel sind Attribute mit besonderer Bedeutung.</p>
+
+                <h4>1. Primärschlüssel (Primary Key, PK)</h4>
+                <ul>
+                    <li>Ein Attribut (oder eine Kombination), das einen Datensatz (Tupel) <b>eindeutig identifiziert</b>.</li>
+                    <li>Ein PK darf <b>niemals doppelt</b> vorkommen und <b>niemals leer</b> (NULL) sein.</li>
+                    <li>Bsp.: `SchuelerID` (gut!), `Name` (schlecht, da Namen doppelt vorkommen können).</li>
+                    <li>Primärschlüssel werden im ER-Modell <b>unterstrichen</b>.</li>
+                    <h5 class="pt-2 font-bold">Unterscheidung</h5>
+                    <ul>
+                        <li><i>Natürliche Schlüssel:</i> Daten, die ohnehin da sind und eindeutig sind.</li>
+                        <ul>
+                            <li>Beispiel: <b>ISBN</b> bei Büchern, <b>EAN-Code</b> auf Produkten, <b>KFZ-Kennzeichen</b></li>
+                            <li>Nachteil: Ändern sich manchmal (Kennzeichen bei Umzug) oder sind lang.</li>
+                        </ul>
+                        <li><i>Künstliche Schlüssel:</i> extra für die Datenbank erfundene Nummern.</li>
+                        <ul>
+                            <li>Beispiel: Kundennummer, Schüler-ID, Auto-Increment-<b>ID</b> (1, 2, 3...).</li>
+                            <li>Vorteil: Kurz, ändern sich nie.</li>
+                        </ul>
+                    </ul>
+                </ul>
+                <img src="images/er-modell.png" alt="er-modell-beispiel-1">
+
+                <h4>2. Fremdschlüssel (Foreign Key, FK)</h4>
+                <ul>
+                    <li>Ein Attribut, das auf den <b>Primärschlüssel einer anderen Tabelle</b> verweist.</li>
+                    <li>Fremdschlüssel stellen die <b>Beziehungen (Relationen)</b> zwischen Tabellen her.</li>
+                    <li>Bsp.: In der Tabelle "Ausleihe" steht eine `SchuelerID_FK`, die auf die `SchuelerID` in der "Schueler"-Tabelle verweist.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2.5 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Übung</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Übung 1: Tabellen modellieren</h3>
+                <p>Modelliert die folgenden Tabellen. Überlegt euch sinnvolle Spalten (Attribute) und bestimmt einen guten Primärschlüssel (PK).</p>
+
+                <h4>1. Tabelle "Klasse"</h4>
+                <ul>
+                    <li>Welche Attribute braucht eine Klasse?</li>
+                    <li>Was wäre ein guter PK?</li>
+                </ul>
+
+                <h4>2. Tabelle "Lehrer"</h4>
+                <ul>
+                    <li>Welche Attribute braucht ein Lehrer?</li>
+                    <li>Was wäre ein guter PK?</li>
+                </ul>
+
+                <h4>3. Beziehung</h4>
+                <ul>
+                    <li>Ins ER-Modell eintragen.</li>
+                    <li>Wo kann der Fremdschlüssel hin...wenn Klasse nur einen Lehrer für alle Fächer hat? Wenn ein Lehrer nur eine Klasse hat?</li>
+                    <li>Was ist denn jetzt schon wieder das Problem in der Realität?</li>
+                </ul>
+
+                <h3>Übung 2: Diagrame erweitern</h3>
+                <ul>
+                    <li>Füge zu jeder Entität in Diagrammen Tiktok und Fußball einen natürlichen oder künstlichen <i>Primärschlüssel</i> hinzu.</li>
+                    <li><b>Zusatz (als Letztes)</b>: Tiktok oder Fußball in Base mit <i>Fremdschlüssel</i> erweitern und visualisieren.</li>
+                </ul>
+
+                <h3>Übung 3: Begriffe richtig zuordnen</h3>
+                <table class="w-full text-left border border-collapse">
+                    <tr class="bg-gray-100">
+                        <!-- <th>Tabelle</th> -->
+                        <th class="border p-2">Begriff 1</th>
+                        <th class="border p-2">Begriff 2</th>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Spalte</td>
+                        <td class="border p-2">Primärschlüssel</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Zeile</td>
+                        <td class="border p-2">Attribut</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Eindeutige ID</td>
+                        <td class="border p-2">Fremdschlüssel</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Verweis</td>
+                        <td class="border p-2">Datensatz</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Übung - Lösungen</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Übung 1: Tabellen modellieren</h3>
+                <p>Modelliert die folgenden Tabellen. Überlegt euch sinnvolle Spalten (Attribute) und bestimmt einen guten Primärschlüssel (PK).</p>
+
+                <h4>1. Tabelle "Klasse"</h4>
+                <ul>
+                    <li>Welche Attribute braucht eine Klasse? (z.B. Name, Raum, Klassenlehrer)</li>
+                    <li>Was wäre ein guter PK? (z.B. `KlassenName` wie "9a")</li>
+                </ul>
+
+                <h4>2. Tabelle "Lehrer"</h4>
+                <ul>
+                    <li>Welche Attribute braucht ein Lehrer? (z.B. Name, Kürzel, Fach)</li>
+                    <li>Was wäre ein guter PK? (z.B. `LehrerKuerzel`)</li>
+                </ul>
+
+                <h4>3. Bonus-Frage</h4>
+                <ul>
+                    <li>LehrerKuerzel_FK in Schueler-Tablle. Bzw. KlassenName_FK in Lehrer-Tabelle.</li>
+                    <li>In Realität: wir brauchen noch weitere Tabellen um Schuelern mehrere Lehrer zuzuweisen bzw. einem Lehrer mehrere Klassen.</li>
+                </ul>
+                <h3>Übung 2: Diagrame erweitern</h3>
+                <p class="pb-8">Vergleichen.</p>
+
+                <h3>Übung 3: Begriffe richtig zuordnen</h3>
+                <table class="w-full text-left border border-collapse">
+                    <tr class="bg-gray-100">
+                        <!-- <th>Tabelle</th> -->
+                        <th class="border p-2">Begriff 1</th>
+                        <th class="border p-2">Begriff 2</th>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Spalte</td>
+                        <td class="border p-2">Attribut</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Zeile</td>
+                        <td class="border p-2">Datensatz</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Eindeutige ID</td>
+                        <td class="border p-2">Primärschlüssel</td>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Verweis</td>
+                        <td class="border p-2">Fremdschlüssel </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 3.4 -->
+        <!--
+        <div class="slide">
+            <div class="slide-header">
+                <h2>3.4: Tafelbild (Kardinalitäten)</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Tafelbild: Kardinalitäten (Wie viele?)</h3>
+                [Image of 1:1, 1:n, n:m Kardinalität Beispiele]
+                <p>Kardinalitäten beschreiben, *wie viele* Entitäten an einer Beziehung beteiligt sind.</p>
+
+                <h4>1. 1:1 (Eins-zu-Eins)</h4>
+                <ul>
+                    <li>Bsp.: [Schüler] --(1)-- &lt;hat&gt; --(1)-- [Spind]</li>
+                    <li>(Ein Schüler hat genau einen Spind. Ein Spind gehört genau einem Schüler.)</li>
+                </ul>
+
+                <h4>2. 1:n (Eins-zu-Viele)</h4>
+                <ul>
+                    <li>Bsp.: [Klasse] --(1)-- &lt;besteht aus&gt; --(n)-- [Schüler]</li>
+                    <li>(Eine Klasse besteht aus vielen Schülern. Ein Schüler ist in genau einer Klasse.)</li>
+                </ul>
+
+                <h4>3. n:m (Viele-zu-Viele)</h4>
+                <ul>
+                    <li>Bsp.: [Schüler] --(n)-- &lt;belegt&gt; --(m)-- [Kurs]</li>
+                    <li>(Ein Schüler belegt viele Kurse. Ein Kurs wird von vielen Schülern belegt.)</li>
+                </ul>
+            </div>
+        </div>    
+        <div class="slide">
+            <div class="slide-header">
+                <h2>3.5: Übung</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Übung 1: ER-Modell "Schulbibliothek"</h3>
+                <p>Zeichnet (auf Papier) ein ER-Modell für das Szenario aus dem Einstieg:</p>
+                <div class="problem">
+                    <p>"Ich habe Schüler, Bücher und Ausleihen. Ein Schüler kann mehrere Bücher ausleihen. Ein Buch kann (über die Zeit) von vielen Schülern ausgeliehen werden."</p>
+                </div>
+
+                <h4>Schritte:</h4>
+                <ol>
+                    <li>Findet die Entitätstypen (die "Nomen"). (z.B. "Schüler", "Buch")</li>
+                    <li>Findet die Beziehung (das "Verb"). (z.B. "leiht aus")</li>
+                    <li>Bestimmt die Kardinalität (1:1, 1:n oder n:m?).</li>
+                    <li>Fügt Attribute hinzu (Ellipsen). Denkt an Primärschlüssel (unterstreichen)!</li>
+                </ol>
+                <p><b>Tipp:</b> Die Beziehung "leiht aus" ist n:m!</p>
+            </div>
+        </div> -->
+
+        <div class="slide">
+            <div class="slide-header">
+                <h2>Zusammenfassung</h2>
+                <p>LB 1: Informationen und Daten</p>
+            </div>
+            <div class="slide-content">
+                <h3>Zusammenfassung</h3>
+                <div class="summary-box">
+                    <h4>Was haben wir gelernt?</h4>
+                    <ul>
+                        <li>Bevor man eine DB baut, plant man sie mit einem <b>ER-Modell</b>.</li>
+                        <li><b>Rechteck</b> = Entitätstyp (z.B. Schüler)</li>
+                        <li><b>Ellipse</b> = Attribut (z.B. Name) (<u>PK unterstrichen</u>)</li>
+                        <li><b>Raute</b> = Beziehung (z.B. leiht aus)</li>
+                        <li>Jede Tabelle braucht einen <b>Primärschlüssel (PK)</b> zur eindeutigen Identifizierung (z.B. `ID`).</li>
+                        <li>Beziehungen zwischen Tabellen werden mit <b>Fremdschlüsseln (FK)</b> realisiert.</li>
+                        <li>Motivation für PK und FK ist die <b>Daten-Integrität</b> ("wo ist mein Geld"?) und <b>Effizienz</b> (Buchseite suchen vs Inhaltsverzeichnis).</li>
+                        <!-- <li><b>Kardinalitäten</b> (1:1, 1:n, n:m) beschreiben die Anzahl der Beziehungen.</li> -->
+                    </ul>
+                </div>
+                <h4>ER-Symbole erkennen:</h4>
+                <p>Was ist ein <u>unterstrichenes Attribut</u>?</p>
+                <p>Was ist eine Raute?</p>
+            </div>
+        </div>
+
+        <!--
+        Zusatz:
+        Bei Fußball..ist Vereinsname eindeutig?
+
+        Wo gibt es Einzigartigkeit in der Welt?
+Biologisch: DNA, Fingerabdruck, Iris-Scan.
+Organisatorisch: Steuer-ID, Personalausweisnummer, Matrikelnummer.
+Technisch: MAC-Adresse (Netzwerkkarte), IP-Adresse (im Netzwerk).
+
+Foreign-Key in Base?! Visualisieren? -> TODO
+
+        Motivation: neben Eindeutigkeit und Verknüpfen, bieten PK und FK auch Effizienz 
+        -> Beispiel suche nach Kapitel in Buch "Datenbank in der Industrie" im Inhaltsverzeichnis vs Seite 86 aufschlagen
+        
+        Motivation Eindeutigkeit: Wenn ich nicht eindeutig identifiziert bin...wo überweis ich dann mein Geld hin?
+        -->
+
+    </div>
+    <div class="navigation">
+        <button id="prevBtn" class="nav-button" onclick="prevSlide()">&#8592; Zurück</button>
+        <span id="slide-counter">Slide 1 / X</span>
+        <button id="nextBtn" class="nav-button" onclick="nextSlide()">Weiter &#8594;</button>
+    </div>
+
+    <script>
+        // Alle Slides sammeln
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlideIndex = 0;
+
+        // Elemente für Anzeige
+        const counterElement = document.getElementById('slide-counter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Funktion zum Anzeigen eines Slides
+        function showSlide(index) {
+            // Alle Slides ausblenden
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            // Aktuellen Slide einblenden
+            slides[index].classList.add('active');
+
+            // Counter aktualisieren
+            counterElement.textContent = `Slide ${index + 1} / ${totalSlides}`;
+
+            // Button-Status (Disabled am Anfang/Ende)
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === totalSlides - 1;
+
+            // Nach oben scrollen bei Wechsel
+            window.scrollTo(0, 0);
+
+            // Inhalt des Slides auch nach oben scrollen (falls gescrollt wurde)
+            const content = slides[index].querySelector('.slide-content');
+            if (content) content.scrollTop = 0;
+        }
+
+        // Weiter
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Zurück
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Tastatur-Steuerung (Pfeiltasten)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "ArrowRight") {
+                nextSlide();
+            } else if (event.key === "ArrowLeft") {
+                prevSlide();
+            }
+        });
+
+        // Initialisierung
+        showSlide(currentSlideIndex);
+    </script>
+
+</body>
+
+</html>
