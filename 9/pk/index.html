@@ -230,34 +230,24 @@
             </div>
             <div class="slide-content">
                 <img src="images/er-modell.png" alt="er-modell-beispiel-1">
-            </div>
-        </div>
-
-        <div class="slide">
-            <div class="slide-header">
-                <h2>Wiederholung: ER-Modell</h2>
-                <p>LB 1: Informationen und Daten</p>
-            </div>
-            <div class="slide-content">
-                <img src="images/er-modell.png" alt="er-modell-beispiel-1">
                 <p>ERM = Eine grafische Methode, um Datenstrukturen zu planen (nach Chen).</p>
 
                 <h4>1. Entitätstyp (Rechteck)</h4>
                 <ul>
                     <li>Eine Gruppe von "Dingen", über die wir Daten speichern.</li>
-                    <li>Bsp.: [Nutzer], [Video]</li>
+                    <li>Bsp.: Nutzer, Video</li>
                 </ul>
 
                 <h4>2. Attribut (Ellipse)</h4>
                 <ul>
                     <li>Eine Eigenschaft des Entitätstyps.</li>
-                    <li>Bsp.: (E-Mail), (Views)</li>
+                    <li>Bsp.: E-Mail, Views</li>
                 </ul>
 
                 <h4>3. Beziehungstyp (Raute)</h4>
                 <ul>
                     <li>Beschreibt die Verbindung zwischen zwei Entitätstypen.</li>
-                    <li>Bsp.: [Nutzer] --&lt;hat&gt;-- [Videos]</li>
+                    <li>Bsp.: Nutzer --&lt;hat&gt;-- Videos</li>
                 </ul>
             </div>
         </div>
@@ -442,22 +432,27 @@
 
                 <h4>1. 1:1 (Eins-zu-Eins)</h4>
                 <ul>
-                    <li>Bsp.: [Schüler] --(1)-- &lt;hat&gt; --(1)-- [Spind]</li>
-                    <li>(Ein Schüler hat genau einen Spind. Ein Spind gehört genau einem Schüler.)</li>
+                    <li>Bsp.: [Schüler] --(1)-- &lt;hat&gt; --(1)-- [Ausweis]</li>
+                    <li>Ein Schüler hat genau einen Ausweis. Ein Ausweis gehört genau einem Schüler.</li>
                 </ul>
+                <img src="images/kardinalitaeten_1.png" alt="1-1-kardinalitaeten">
+                <!-- class="w-3/5"  -->
 
                 <h4>2. 1:n (Eins-zu-Viele)</h4>
                 <ul>
                     <li>Bsp.: [Klasse] --(1)-- &lt;besteht aus&gt; --(n)-- [Schüler]</li>
-                    <li>(Eine Klasse besteht aus vielen Schülern. Ein Schüler ist in genau einer Klasse.)</li>
+                    <li>Eine Klasse besteht aus vielen Schülern. Ein Schüler ist in genau einer Klasse.</li>
                 </ul>
+                <img src="images/kardinalitaeten_2.png" alt="1-n-kardinalitaeten">
 
                 <h4>3. n:m (Viele-zu-Viele)</h4>
                 <ul>
-                    <li>Bsp.: [Schüler] --(n)-- &lt;belegt&gt; --(m)-- [Kurs]</li>
-                    <li>(Ein Schüler belegt viele Kurse. Ein Kurs wird von vielen Schülern belegt.)</li>
+                    <li>Bsp.: [Schüler] --(n)-- &lt;haben&gt; --(m)-- [Fach]</li>
+                    <li>Ein Schüler hat viele Fächer. Ein Fach wird von vielen Schülern belegt.</li>
                 </ul>
+                <img src="images/kardinalitaeten_3.png" alt="m-n-kardinalitaeten">
             </div>
+
         </div>
 
         <!-- Slide 2.5 -->

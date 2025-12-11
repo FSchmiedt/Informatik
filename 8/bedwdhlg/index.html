@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Karol: Bedingte Wiederholungen & Anweisungen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .karol-keyword {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        /* Amber */
+        
+        .karol-condition {
+            color: #60a5fa;
+        }
+        /* Blue */
+        
+        .karol-comment {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        /* Gray */
+        
+        .karol-custom {
+            color: #a78bfa;
+            font-weight: bold;
+        }
+        /* Purple for Methods */
+        
+        details>summary {
+            list-style: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        details>summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        details[open]>summary {
+            margin-bottom: 10px;
+        }
+        
+        .operator {
+            font-weight: 700;
+            color: #b91c1c;
+            /* Red-700 for Operators */
+        }
+        
+        .world-info {
+            display: inline-block;
+            background-color: #e0f2fe;
+            /* Light Blue */
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            border: 1px solid #bae6fd;
+            margin-bottom: 0.5rem;
+        }
+        
+        .solution-locked {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center min-h-screen pb-12">
+
+    <div class="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../../index.html" class="text-sm font-medium text-gray-500 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg> Zurück zur Übersicht
+            </a>
+            <h1 class="text-xl font-bold text-gray-800 hidden md:block">Robot Karol: Bedingte Wiederholung</h1>
+            <h1 class="text-lg font-bold text-gray-800 md:hidden">Robot Karol</h1>
+        </div>
+    </div>
+
+    <div id="password-container" class="w-full max-w-4xl px-4 mt-6">
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span class="text-yellow-800 font-medium">Lösungen sind gesperrt.</span>
+            </div>
+            <div class="flex w-full md:w-auto gap-2">
+                <input type="password" id="password-input" placeholder="Passwort eingeben" class="border border-yellow-300 rounded px-3 py-2 text-sm w-full md:w-48 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                <button onclick="checkPassword()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded text-sm transition-colors">
+                    Freischalten
+                </button>
+            </div>
+        </div>
+        <p id="error-msg" class="text-red-600 text-sm mt-2 hidden font-bold text-center">Falsches Passwort!</p>
+    </div>
+
+    <div class="w-full max-w-4xl px-4 mt-8 space-y-8">
+
+        <section class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">1. Wiederholung: Was wir schon können</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-gray-700 mb-2">Grundbefehle</h3>
+                    <ul class="list-disc list-inside text-sm space-y-1 text-gray-600">
+                        <li><code>Schritt</code></li>
+                        <li><code>LinksDrehen</code></li>
+                        <li><code>Hinlegen</code> / <code>Aufheben</code></li>
+                        <li><code>MarkeSetzen</code></li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-gray-700 mb-2">Zählschleifen</h3>
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">wiederhole</span> 5 mal<br> &nbsp;&nbsp;Schritt<br> <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-bold text-gray-700 mb-2">Verzweigung & Bedingungen</h3>
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">IstWand</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;LinksDrehen<br> <span class="karol-keyword">sonst</span><br> &nbsp;&nbsp;Schritt<br>
+                        <span class="karol-keyword">endewenn</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-blue-100 p-2 rounded-lg text-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">2. Die Bedingte Wiederholung</h2>
+            </div>
+
+            <p class="mb-4 text-gray-700">
+                Oft wissen wir nicht vorher, wie oft wir etwas tun müssen (z.B. "Gehe bis zur Wand"). Dafür gibt es die <b>bedingte Schleife</b> (auch "while-Schleife").
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-blue-600 mb-2">Syntax:</h3>
+                    <div class="code-block">
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;Schritt<br>
+                        <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Karol prüft <b>vor</b> jedem Durchlauf die Bedingung.
+                    </p>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                    <h3 class="font-semibold text-yellow-800 mb-2">Wichtige Bedingungen:</h3>
+                    <ul class="grid grid-cols-2 gap-2 text-sm font-mono text-gray-700">
+                        <li>IstWand</li>
+                        <li>NichtIstWand</li>
+                        <li>IstZiegel</li>
+                        <li>NichtIstZiegel</li>
+                        <li>IstMarke</li>
+                        <li>NichtIstMarke</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 border-t-4 border-purple-500">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-purple-100 p-2 rounded-lg text-purple-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">3. Eigene Anweisungen</h2>
+            </div>
+
+            <p class="mb-4 text-gray-700">
+                Wenn wir Programmteile oft benötigen (z.B. "Umdrehen" oder "Zur Wand laufen"), können wir dafür eine eigene <b>Anweisung</b> (auch Methode genannt) definieren. Das macht das Hauptprogramm übersichtlicher.
+            </p>
+
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 class="font-bold text-gray-700 mb-2">Beispiel: Karol vergisst was</h3>
+                <div class="world-info">Weltgröße: 10x10x1</div>
+                <div class="code-block">
+                    <span class="karol-keyword">anweisung</span> <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;LinksDrehen
+                    <br> &nbsp;&nbsp;LinksDrehen
+                    <br>
+                    <span class="karol-keyword">endeAnweisung</span>
+                    <br>
+                    <br>
+                    <span class="karol-keyword">Programm</span><br>&nbsp;&nbsp; Schritt(8)
+                    <br> &nbsp;&nbsp; <span class="karol-custom">Umdrehen</span><br>&nbsp;&nbsp;&nbsp;Schritt(8)
+                    <br>
+                    <span class="karol-keyword">EndeProgramm</span><br>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 1: Zur Wand legen</h2>
+            <div class="world-info">Weltgröße: 10x10x1</div>
+
+            <p class="mb-4 mt-2">
+                <span class="operator">Implementiere</span> ein Programm, welches Karol, unabhängig von seinem Standpunkt, eine Ziegelreihe bis zur nächsten Wand in seiner Blickrichtung legen lässt.
+            </p>
+
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="font-bold text-sm text-gray-700 mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg> Lösung:
+                </h3>
+                <div class="code-block">
+                    <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;Hinlegen<br> &nbsp;&nbsp;Schritt<br>
+                    <span class="karol-keyword">endewiederhole</span><br>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 2: Zimmer verschönern</h2>
+            <div class="world-info">Weltgröße: 5x9x1</div>
+
+            <p class="mb-4 mt-2">
+                Karol steht in einer Ecke des Raumes (Blickrichtung entlang der Wand). Er soll einmal komplett im Kreis laufen und dabei die Wände mit Ziegeln markieren.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="font-bold text-gray-700 border-b pb-1 mb-2">a) Der Rahmen</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        Nutze die Logik der <b>bedingten Schleife</b> aus Übung 1.
+                        <span class="operator">Definiere</span> eine Anweisung <code>ZiegelnUndLaufen</code>. Optional kann auch nur die Sequenz aus Übung 1 genutzt werden.
+                    </p>
+                    <p class="text-sm text-gray-600 mb-2">
+                        <span class="operator">Implementiere</span> anschließend das Hauptprogramm, welches diese Anweisung nutzt, um alle vier Wände abzulaufen.
+                    </p>
+                    <img src="Zimmer_verschoenern.jpg" alt="Zimmer Rahmen" class="rounded-lg shadow-sm border mt-4 h-32 object-contain bg-white mx-auto">
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-700 border-b pb-1 mb-2">b) Mustergirlande</h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                        Ändere die Anweisung so ab, dass Karol eine Mustergirlande legt (nur <b>jeden zweiten</b> Ziegel).
+                    </p>
+                    <img src="Mustergirlande.jpg" alt="Zimmer Girlande" class="rounded-lg shadow-sm border mt-4 h-32 object-contain bg-white mx-auto">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösungen anzeigen
+                </summary>
+                <div class="mt-4 space-y-6">
+
+                    <div>
+                        <h5 class="font-bold text-sm text-blue-800 mb-2">Zu a) Rahmen mit "ZiegelnUndLaufen"</h5>
+                        <div class="code-block">
+                            <span class="karol-keyword">Anweisung</span> <span class="karol-custom">ZiegelnUndLaufen</span><br> &nbsp;&nbsp;
+                            <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                            <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                            <br> &nbsp;&nbsp;
+                            <span class="karol-keyword">endewiederhole</span><br>
+                            <span class="karol-keyword">endeAnweisung</span>
+                            <br><br>
+                            <span class="karol-keyword">Programm</span><br> &nbsp;&nbsp;
+                            <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="karol-custom">ZiegelnUndLaufen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                            <br> &nbsp;&nbsp;
+                            <span class="karol-keyword">endewiederhole</span><br>
+                            <span class="karol-keyword">EndeProgramm</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4 border-gray-200">
+                        <h5 class="font-bold text-sm text-blue-800 mb-2">Zu b) Girlande (jeden zweiten)</h5>
+                        <div class="code-block">
+                            <span class="karol-keyword">Anweisung</span> <span class="karol-custom">GirlandeLegen</span><br> &nbsp;
+                            <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                            <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                            <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="karol-keyword">wenn</span> <span class="karol-condition">NichtIstWand</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="karol-keyword">endewenn</span><br> &nbsp;&nbsp;
+                            <span class="karol-keyword">endewiederhole</span><br>
+                            <span class="karol-keyword">endeAnweisung</span>
+                            <br><br>
+                            <span class="karol-keyword">Programm</span><br> &nbsp;&nbsp;
+                            <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="karol-custom">GirlandeLegen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                            <br> &nbsp;&nbsp;
+                            <span class="karol-keyword">endewiederhole</span><br>
+                            <span class="karol-keyword">EndeProgramm</span>
+                        </div>
+                    </div>
+
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 3: Lastentransport</h2>
+            <div class="world-info">Weltgröße: 10x10x10 (Höhe beachten!)</div>
+
+            <div class="flex flex-col md:flex-row gap-6 mt-4">
+                <div class="flex-1 space-y-4">
+                    <p class="text-sm text-gray-700">
+                        <span class="operator">Entwerfe</span> eine Sequenz, die es Karol ermöglicht, einen Ziegelstapel, der vor ihm steht, um drei Felder nach <b>links</b> zu versetzen. Der Ziegelstapel kann <b>unterschiedlich</b> hoch sein.
+                    </p>
+
+                    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                        <p class="text-xs text-gray-600 font-bold mb-1">Tipp: Start-Situation simulieren</p>
+                        <div class="code-block text-xs my-0">
+                            <span class="karol-keyword">wiederhole</span> 6 mal<br> &nbsp;&nbsp;Hinlegen
+                            <br>
+                            <span class="karol-keyword">endewiederhole</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="Ziegelstapel_addieren.jpg" alt="Lastentransport" class="rounded-lg shadow-sm border mx-auto bg-white">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block">
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;Aufheben
+                        <br> &nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;Schritt(3)
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;Schritt(3)
+                        <br> &nbsp;&nbsp;LinksDrehen
+                        <br>
+                        <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 4: Aufräumen</h2>
+
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        <span class="operator">Entwerfe</span> eine Sequenz mit der Karol alle Ziegelsteine aufhebt, die er auf seinem geraden Weg zur Wand vor sich sieht. Dabei dürfen sich auf jedem Feld beliebig viele Ziegelsteine befinden.
+                    </p>
+                    <div class="mb-4 text-sm">
+                        <a href="ue4_Aufraeumen.kdw" download="ue4_Aufraeumen.kdw" class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition text-sm font-medium mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg> Welt herunterladen (.kdw)
+                        </a>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="Aufraeumen.jpg" alt="Aufräumen" class="rounded border mx-auto bg-white">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-sm">
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Aufheben<br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;Schritt<br>
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <br>
+                        <span class="karol-comment">// Letztes Feld an der Wand prüfen:</span><br>
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;Aufheben<br>
+                        <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+
+        <section class="bg-white rounded-xl shadow-md p-6 mb-12">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 5: Mähen</h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Karol steht vor einem Viereck aus Ziegeln. Er soll alle Steine einsammeln. <span class="operator">Implementiere</span> eine Lösung, die das gesamte Feld "mäht".
+                    </p>
+                    <a href="ue7_Maehen.kdw" download="ue7_Maehen.kdw" class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition text-sm font-medium mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg> Welt herunterladen (.kdw)
+                    </a>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="Maehen.jpg" alt="Mähen" class="rounded-lg shadow-sm border mx-auto bg-white">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-sm">
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">ReiheMaehen</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Aufheben
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">endeAnweisung</span>
+                        <br><br>
+                        <span class="karol-keyword">Programm</span><br>
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">ReiheMaehen</span><br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;LinksDrehen
+                        <br>
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">EndeProgramm</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-400">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 6: Lange Treppe</h2>
+            <div class="world-info">Weltgröße: 10x10x10</div>
+
+            <div class="flex flex-col md:flex-row gap-6 mt-4">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Karol soll Reihe für Reihe eine Treppe bauen. <span class="operator">Implementiere</span> die Lösung.
+                        <br><br>
+                        <b>Wichtig:</b> Damit Karol die Treppe bauen kann, musst du in den Welteinstellungen die <b>maximale Sprunghöhe</b> erhöhen (z.B. auf 10).
+                        <br><br>
+                        <b>Tipp 1:</b> Markiere den Startpunkt, damit du weißt, bis wohin Karol zurückgehen muss.
+                        <br>
+                        <b>Tipp 2:</b> Die äußere Schleife kann eine einfache Zählschleife sein.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="Lange_Treppe.jpg" alt="Treppe" class="rounded border mx-auto bg-white">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">wiederhole</span> 9 mal<br> &nbsp;&nbsp;MarkeSetzen
+                        <br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstMarke</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">NichtIstWand</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewenn</span><br>
+                        <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-400">
+            <h2 class="text-xl font-bold mb-2 text-blue-800">Übung 7: Staubsauger</h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Von einer Wand zur anderen liegt eine Kette von Ziegeln. <span class="operator">Entwickle</span> ein Programm, mit dem Karol die Kette komplett "aufhebt".
+                    </p>
+                    <div class="bg-yellow-50 p-3 rounded-lg text-sm text-yellow-800 mb-4">
+                        <b>Strategie:</b> Nutze eine bedingte Schleife mit <code>IstZiegel</code>.
+                    </div>
+                    <a href="ue6_Staubsauger.kdw" download="ue6_Staubsauger.kdw" class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition text-sm font-medium mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg> Welt herunterladen (.kdw)
+                    </a>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="Staubsauger_c.jpg" alt="Staubsauger Pfad" class="rounded-lg shadow-sm border mx-auto bg-white">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-sm">
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">IstZiegel</span><br> &nbsp;&nbsp;Aufheben
+                        <br> &nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">NichtIstZiegel</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">NichtIstZiegel</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewenn</span><br> &nbsp;
+                        <span class="karol-keyword">endewenn</span><br>
+                        <span class="karol-keyword">endewiederhole</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 mb-8 border-l-4 border-green-500">
+            <h2 class="text-xl font-bold mb-2 text-green-800">Zusatz 1: Die Burgmauer</h2>
+            <div class="world-info">Weltgröße: 25x25x10</div>
+
+            <div class="flex flex-col md:flex-row gap-6 mt-4">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Karol soll eine Burgmauer bauen.
+                        <br><b>Tipp:</b> Nutze dafür zwei Methoden (mit bedingten Schleifen): Eine für die Basis und eine für den Aufbau.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="burg.png" alt="Burgmauer" class="rounded border mx-auto bg-white shadow-sm">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-purple-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">SeiteBauen</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(4)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">ZinnenSetzen</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(2)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">NichtIstWand</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewenn</span><br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Programm</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">SeiteBauen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">ZinnenSetzen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">EndeProgramm</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 mb-8 border-l-4 border-green-500">
+            <h2 class="text-xl font-bold mb-2 text-green-800">Zusatz 2: Namensschild</h2>
+            <div class="world-info">Weltgröße: 30x30x1</div>
+
+            <div class="flex flex-col md:flex-row gap-6 mt-4">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Schreibe ein Programm, das den Namen <b>OTTO</b> mit Ziegeln auf den Boden schreibt.
+                        <br><b>Tipp:</b> Erstelle für jeden Buchstaben eine eigene Anweisung (z.B. <code>BuchstabeT</code>), damit das Hauptprogramm kurz bleibt.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="otto.png" alt="Otto Schriftzug" class="rounded border mx-auto bg-white shadow-sm">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-purple-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">BuchstabeO</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 2 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 8 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;&nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;Schritt(6)
+                        <br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;LinksDrehen
+                        <br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">BuchstabeT</span><br> &nbsp;
+                        <span class="karol-keyword">wiederhole</span> 7 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;Schritt(3)
+                        <br> &nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;
+                        <span class="karol-keyword">wiederhole</span> 8 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;Schritt(8)
+                        <br> &nbsp;&nbsp;RechtsDrehen
+                        <br> &nbsp;&nbsp;Schritt(5)
+                        <br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Programm</span><br>
+                        <span class="karol-custom">BuchstabeO</span><br>
+                        <span class="karol-custom">BuchstabeT</span><br>
+                        <span class="karol-custom">BuchstabeT</span><br> Schritt
+                        <br> RechtsDrehen
+                        <br>
+                        <span class="karol-custom">BuchstabeO</span><br>
+                        <span class="karol-keyword">EndeProgramm</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 mb-12 border-l-4 border-green-500">
+            <h2 class="text-xl font-bold mb-2 text-green-800">Zusatz 3: Der Tannenbaum</h2>
+            <div class="world-info">Weltgröße: 12x12x10</div>
+
+            <div class="flex flex-col md:flex-row gap-6 mt-4">
+                <div class="flex-1">
+                    <p class="mb-4">
+                        Baue einen Tannenbaum!<br><b>Tipp:</b> Der Baum kann von der Konstruktion ähnlich der Treppe aus Übung 6 betrachtet werden.
+                    </p>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <img src="tree.png" alt="Tannenbaum" class="rounded border mx-auto bg-white shadow-sm">
+                </div>
+            </div>
+
+            <details class="group bg-gray-50 rounded-lg p-4 border border-gray-200 mt-4 solution-locked">
+                <summary class="group-hover:text-green-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg> Lösung anzeigen
+                </summary>
+                <div class="mt-4">
+                    <div class="code-block text-xs">
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;LinksDrehen
+                        <br> &nbsp;&nbsp;LinksDrehen
+                        <br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">Baumstumpf</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 4 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(gelb)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 2 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(rot)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(gelb)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">MitteMarkieren</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 5 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;MarkeSetzen
+                        <br> &nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;MarkeSetzen
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Anweisung</span> <span class="karol-custom">TreppeBisMarke</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 5 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;MarkeSetzen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(grün)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstMarke</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hinlegen(grün)
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstMarke</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;&nbsp;&nbsp;MarkeLöschen
+                        <br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">endeAnweisung</span><br>
+                        <br>
+                        <span class="karol-keyword">Programm</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole</span> 2 mal<br> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="karol-custom">Baumstumpf</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">MitteMarkieren</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">TreppeBisMarke</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">Umdrehen</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">TreppeBisMarke</span><br> &nbsp;&nbsp;
+                        <span class="karol-custom">MitteMarkieren</span><br> &nbsp;&nbsp;&nbsp;MarkeLöschen
+                        <br>
+                        <br> &nbsp;&nbsp;
+                        <span class="karol-keyword">wiederhole solange</span> <span class="karol-condition">NichtIstWand</span><br> &nbsp;&nbsp;&nbsp;&nbsp;Schritt
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">wenn</span> <span class="karol-condition">IstMarke</span> <span class="karol-keyword">dann</span><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MarkeLöschen
+                        <br> &nbsp;&nbsp;&nbsp;
+                        <span class="karol-keyword">endewenn</span><br> &nbsp;&nbsp;
+                        <span class="karol-keyword">endewiederhole</span><br>
+                        <span class="karol-keyword">EndeProgramm</span>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+    </div>
+
+    <script>
+        const TARGET_HASH = "84fd1e8838a81a9d9861e3d1d1b77f516c3b274e0eab9485f06f88f77493bd3e";
+
+        async function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            // Hash berechnen
+            const msgBuffer = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            if (hashHex === TARGET_HASH) {
+                // Passwort korrekt: Lösungen anzeigen
+                const lockedElements = document.querySelectorAll('.solution-locked');
+                lockedElements.forEach(el => {
+                    el.classList.remove('solution-locked');
+                });
+
+                // Eingabefeld ausblenden und Erfolgsmeldung zeigen
+                document.getElementById('password-container').innerHTML = `
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm w-full">
+                        <p class="font-bold flex items-center">
+                            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Lösungen freigeschaltet!
+                        </p>
+                    </div>`;
+            } else {
+                // Falsches Passwort
+                errorMsg.classList.remove('hidden');
+                document.getElementById('password-input').classList.add('border-red-500');
+            }
+        }
+
+        // Enter-Taste unterstützen
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+
+</html>
